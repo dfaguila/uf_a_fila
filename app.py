@@ -62,28 +62,28 @@ anio = st.number_input("Año de la matriz", min_value=2000, max_value=2100, valu
 
 if archivo:
     try:
-        # Leer archivo
         if archivo.name.endswith(".csv"):
-            df = pd.read_csv(archivo)
+            df = pd.read_csv(archivo, sep=";", encoding="utf-8")
         else:
             df = pd.read_excel(archivo)
+
+        # LIMPIEZA CLAVE
+        df.columns = df.columns.str.strip()
 
         st.subheader("🔍 Vista original")
         st.dataframe(df.head(10), use_container_width=True)
 
-        # Transformar
         df_final = transformar_uf(df, anio)
 
         st.subheader("✅ Resultado transformado")
         st.dataframe(df_final, use_container_width=True)
 
-        # Descargar
         csv = df_final.to_csv(index=False).encode("utf-8")
         st.download_button(
-            label="⬇️ Descargar CSV",
-            data=csv,
-            file_name=f"UF_{anio}_transformada.csv",
-            mime="text/csv"
+            "⬇️ Descargar CSV",
+            csv,
+            f"UF_{anio}_transformada.csv",
+            "text/csv"
         )
 
         st.success(f"Conversión completada: {len(df_final)} registros generados")
